@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pomodoro</title>
+    <style>
+      :root {
+        --bg: #0f1419;
+        --card: #1a2332;
+        --text: #e8eef5;
+        --muted: #8b98a8;
+        --accent: #e85d4c;
+        --accent-dim: #c94a3b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: radial-gradient(ellipse at top, #1c2838 0%, var(--bg) 55%);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+      .shell {
+        width: min(420px, 100%);
+        background: var(--card);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow:
+          0 24px 48px rgba(0, 0, 0, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .timer {
+        font-variant-numeric: tabular-nums;
+        font-size: clamp(3.25rem, 12vw, 4.5rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        margin: 1.25rem 0 1.75rem;
+        text-align: center;
+      }
+      .mode {
+        text-align: center;
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        padding: 0.55rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        transition:
+          background 0.15s,
+          transform 0.08s;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      button.primary:hover {
+        background: var(--accent-dim);
+      }
+      button.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .footer {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-align: center;
+      }
+      code {
+        font-size: 0.76rem;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 0.12rem 0.35rem;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <h1>Pomodoro</h1>
+      <div class="mode" id="mode">Focus session</div>
+      <div class="timer" id="timer" aria-live="polite">25:00</div>
+
+      <div class="row">
+        <button type="button" class="primary" id="toggle">Start</button>
+        <button type="button" id="reset">Reset</button>
+      </div>
+      <div class="row">
+        <button type="button" id="preset-pom">25&nbsp;min</button>
+        <button type="button" id="preset-short">5&nbsp;min break</button>
+        <button type="button" id="preset-long">15&nbsp;min break</button>
+      </div>
+
+      <div class="footer">
+        Served by FastAPI —
+        <code>GET /</code>
+        &
+        <code>GET /health</code>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const TIMER = document.getElementById("timer");
+        const MODE = document.getElementById("mode");
+        const BTN_TOGGLE = document.getElementById("toggle");
+        const BTN_RESET = document.getElementById("reset");
+        const presetPom = document.getElementById("preset-pom");
+        const presetShort = document.getElementById("preset-short");
+        const presetLong = document.getElementById("preset-long");
+
+        const MODES = { focus: "Focus session", short: "Short break", long: "Long break" };
+
+        let totalSeconds = 25 * 60;
+        let remaining = totalSeconds;
+        let running = false;
+        let tickId = null;
+        let currentModeKey = "focus";
+
+        function formatTime(sec) {
+          const m = Math.floor(sec / 60);
+          const s = sec % 60;
+          return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        }
+
+        function render() {
+          TIMER.textContent = formatTime(remaining);
+          MODE.textContent = MODES[currentModeKey];
+        }
+
+        function stopTick() {
+          if (tickId !== null) {
+            clearInterval(tickId);
+            tickId = null;
+          }
+        }
+
+        function tick() {
+          if (remaining <= 0) {
+            stopTick();
+            running = false;
+            BTN_TOGGLE.textContent = "Start";
+            TIMER.textContent = "00:00";
+            document.title = "Done — Pomodoro";
+            return;
+          }
+          remaining -= 1;
+          render();
+          document.title = `${formatTime(remaining)} — Pomodoro`;
+        }
+
+        function start() {
+          if (remaining <= 0) return;
+          running = true;
+          BTN_TOGGLE.textContent = "Pause";
+          stopTick();
+          tickId = setInterval(tick, 1000);
+        }
+
+        function pause() {
+          running = false;
+          BTN_TOGGLE.textContent = "Start";
+          stopTick();
+        }
+
+        BTN_TOGGLE.addEventListener("click", () => {
+          running ? pause() : start();
+          document.title = "Pomodoro";
+          if (!running && remaining > 0) document.title = `${formatTime(remaining)} — Pomodoro`;
+        });
+
+        BTN_RESET.addEventListener("click", () => {
+          pause();
+          remaining = totalSeconds;
+          render();
+          document.title = "Pomodoro";
+        });
+
+        function preset(minutes, modeKey) {
+          pause();
+          totalSeconds = minutes * 60;
+          remaining = totalSeconds;
+          currentModeKey = modeKey;
+          render();
+          document.title = "Pomodoro";
+        }
+
+        presetPom.addEventListener("click", () => preset(25, "focus"));
+        presetShort.addEventListener("click", () => preset(5, "short"));
+        presetLong.addEventListener("click", () => preset(15, "long"));
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
