@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -139,7 +139,11 @@
         const presetShort = document.getElementById("preset-short");
         const presetLong = document.getElementById("preset-long");
 
-        const MODES = { focus: "Focus session", short: "Short break", long: "Long break" };
+        const MODES = {
+          focus: "Focus session",
+          short: "Short break",
+          long: "Long break",
+        };
 
         let totalSeconds = 25 * 60;
         let remaining = totalSeconds;
@@ -196,7 +200,8 @@
         BTN_TOGGLE.addEventListener("click", () => {
           running ? pause() : start();
           document.title = "Pomodoro 🍅";
-          if (!running && remaining > 0) document.title = `${formatTime(remaining)} — Pomodoro 🍅`;
+          if (!running && remaining > 0)
+            document.title = `${formatTime(remaining)} — Pomodoro 🍅`;
         });
 
         BTN_RESET.addEventListener("click", () => {

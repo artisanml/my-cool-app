@@ -1,0 +1,24 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = [
+  "--cov=main",
+  "--cov-branch",
+  "--cov-fail-under=100",
+  "--cov-report=term-missing",
+]
+
+[tool.coverage.run]
+source = ["main"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
