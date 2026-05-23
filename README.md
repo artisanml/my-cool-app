@@ -1,6 +1,6 @@
 # my-cool-app
 
-Minimal FastAPI example that serves a single-page Pomodoro timer (plain HTML/CSS/JS) — handy for demos and articles.
+Minimal FastAPI example that serves a single-page Pomodoro timer (plain HTML/CSS/JS) — handy for demos and articles. Use **Python 3.12+**.
 
 ## Run locally
 
