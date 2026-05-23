@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pomodoro</title>
+    <title>Pomodoro 🍅</title>
     <style>
       :root {
         --bg: #0f1419;
@@ -31,9 +31,17 @@
         background: radial-gradient(ellipse at top, #1c2838 0%, var(--bg) 55%);
         color: var(--text);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 0.85rem;
         padding: 1.5rem;
+      }
+      .tomato-outside {
+        font-size: clamp(2.75rem, 10vw, 3.75rem);
+        line-height: 1;
+        user-select: none;
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
       }
       .shell {
         width: min(420px, 100%);
@@ -101,27 +109,10 @@
       button.primary:hover {
         background: var(--accent-dim);
       }
-      button.ghost {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-      }
-      .footer {
-        margin-top: 1.25rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        font-size: 0.8rem;
-        color: var(--muted);
-        text-align: center;
-      }
-      code {
-        font-size: 0.76rem;
-        background: rgba(0, 0, 0, 0.25);
-        padding: 0.12rem 0.35rem;
-        border-radius: 6px;
-      }
     </style>
   </head>
   <body>
+    <div class="tomato-outside" aria-hidden="true">🍅</div>
     <div class="shell">
       <h1>Pomodoro</h1>
       <div class="mode" id="mode">Focus session</div>
@@ -135,13 +126,6 @@
         <button type="button" id="preset-pom">25&nbsp;min</button>
         <button type="button" id="preset-short">5&nbsp;min break</button>
         <button type="button" id="preset-long">15&nbsp;min break</button>
-      </div>
-
-      <div class="footer">
-        Served by FastAPI —
-        <code>GET /</code>
-        &
-        <code>GET /health</code>
       </div>
     </div>
 
@@ -187,12 +171,12 @@
             running = false;
             BTN_TOGGLE.textContent = "Start";
             TIMER.textContent = "00:00";
-            document.title = "Done — Pomodoro";
+            document.title = "Done — Pomodoro 🍅";
             return;
           }
           remaining -= 1;
           render();
-          document.title = `${formatTime(remaining)} — Pomodoro`;
+          document.title = `${formatTime(remaining)} — Pomodoro 🍅`;
         }
 
         function start() {
@@ -211,15 +195,15 @@
 
         BTN_TOGGLE.addEventListener("click", () => {
           running ? pause() : start();
-          document.title = "Pomodoro";
-          if (!running && remaining > 0) document.title = `${formatTime(remaining)} — Pomodoro`;
+          document.title = "Pomodoro 🍅";
+          if (!running && remaining > 0) document.title = `${formatTime(remaining)} — Pomodoro 🍅`;
         });
 
         BTN_RESET.addEventListener("click", () => {
           pause();
           remaining = totalSeconds;
           render();
-          document.title = "Pomodoro";
+          document.title = "Pomodoro 🍅";
         });
 
         function preset(minutes, modeKey) {
@@ -228,7 +212,7 @@
           remaining = totalSeconds;
           currentModeKey = modeKey;
           render();
-          document.title = "Pomodoro";
+          document.title = "Pomodoro 🍅";
         }
 
         presetPom.addEventListener("click", () => preset(25, "focus"));
