@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -44,7 +44,7 @@ THANK_YOU_MESSAGES = {
 }
 
 
-@app.post("/subscribe")
+@app.post("/subscribe", status_code=status.HTTP_201_CREATED)
 async def subscribe(payload: SubscribeBody):
     """Silly fake billing — frontend calls this after the trial ends."""
     message = THANK_YOU_MESSAGES[payload.tier]

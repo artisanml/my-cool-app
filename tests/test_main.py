@@ -31,7 +31,7 @@ def test_subscribe_premium_message() -> None:
 
 def test_subscribe_unlimited_message() -> None:
     response = client.post("/subscribe", json={"tier": "unlimited"})
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {"message": UNLIMITED_THANK_YOU}
 
 
